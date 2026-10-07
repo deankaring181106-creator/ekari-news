@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EKARI News - Portal Berita Penelitian & Psikologi Kebencanaan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Merriweather -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kompas: {
+                            red: '#D0021B',
+                            darkred: '#9B0012',
+                            navy: '#0F172A',
+                            gray: '#F3F4F6',
+                            border: '#E5E7EB',
+                            text: '#1F2937'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .article-body p {
+            margin-bottom: 1.35rem;
+            line-height: 1.8;
+            color: #2D3748;
+        }
+        .quote-box {
+            border-left: 4px solid #D0021B;
+            background-color: #FEF2F2;
+        }
+        .reading-progress-bar {
+            height: 4px;
+            background-color: #D0021B;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Top News Header Bar (Kompas Style) -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <!-- Utility Bar -->
+        <div class="bg-kompas-navy text-white text-xs py-1.5 px-4">
+            <div class="max-w-7xl mx-mx-auto flex justify-between items-center container mx-auto">
+                <div class="flex items-center space-x-4">
+                    <span class="font-semibold text-red-400"><i class="fa-solid fa-fire mr-1"></i> BERITA KHUSUS</span>
+                    <span class="hidden md:inline text-gray-300">Senin, 05 Oktober 2026 | Portal Penelitian & Psikologi Terintegrasi</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="bg-red-900/60 text-red-200 px-2 py-0.5 rounded text-[11px]"><i class="fa-solid fa-wind mr-1"></i> ISPU Kalimantan: 320 (Sangat Tidak Sehat)</span>
+                    <button onclick="openSavedArticlesModal()" class="hover:text-red-300 flex items-center space-x-1">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <span class="hidden sm:inline">Tersimpan (<span id="bookmark-count">0</span>)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Branding Section -->
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <a href="#" class="flex items-center space-x-2 group">
+                    <div class="bg-kompas-red text-white p-2.5 rounded-lg font-black text-2xl tracking-wider shadow group-hover:bg-kompas-darkred transition">
+                        EKARI
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black tracking-tight text-slate-900 uppercase">EKARI<span class="text-kompas-red">NEWS</span></span>
+                        <span class="text-[10px] text-gray-500 font-medium tracking-wide uppercase">Edukasi • Kesehatan • Analisis • Research • Inovasi</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Search Bar & Actions -->
+            <div class="flex items-center space-x-3">
+                <div class="relative hidden sm:block w-64 md:w-80">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari isu psikologi, ISPA, karhutla..." class="w-full bg-gray-100 border border-gray-300 rounded-full py-1.5 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-kompas-red focus:bg-white transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </div>
+                <button onclick="toggleMobileSearch()" class="sm:hidden p-2 text-gray-600 hover:text-kompas-red">
+                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Category Navigation Menu -->
+        <nav class="bg-white overflow-x-auto border-b border-gray-200">
+            <div class="container mx-auto px-4 flex items-center space-x-6 text-sm font-semibold whitespace-nowrap py-2.5" id="categoryNav">
+                <button onclick="filterCategory('semua')" class="cat-btn text-kompas-red border-b-2 border-kompas-red pb-1">Berita Utama</button>
+                <button onclick="filterCategory('psikologi-bencana')" class="cat-btn text-gray-600 hover:text-kompas-red pb-1">Psikologi Bencana</button>
+                <button onclick="filterCategory('kesehatan-masyarakat')" class="cat-btn text-gray-600 hover:text-kompas-red pb-1">Kesehatan Masyarakat</button>
+                <button onclick="filterCategory('penelitian-lingkungan')" class="cat-btn text-gray-600 hover:text-kompas-red pb-1">Penelitian Lingkungan</button>
+                <button onclick="filterCategory('edukasi-anak')" class="cat-btn text-gray-600 hover:text-kompas-red pb-1">Edukasi & Anak</button>
+                <button onclick="filterCategory('evaluasi-darurat')" class="cat-btn text-gray-600 hover:text-kompas-red pb-1">Evaluasi Darurat</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Search Expandable -->
+    <div id="mobileSearchBox" class="hidden bg-slate-800 p-3 sm:hidden border-b">
+        <input type="text" id="searchInputMobile" oninput="handleSearchMobile()" placeholder="Cari berita atau analisis..." class="w-full bg-white rounded-md py-2 px-3 text-sm focus:outline-none">
+    </div>
+
+    <!-- Breaking Ticker -->
+    <div class="bg-red-50 border-b border-red-200 py-2 px-4">
+        <div class="container mx-auto flex items-center space-x-3 text-xs md:text-sm">
+            <span class="bg-kompas-red text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[10px] shrink-0">TERKINI</span>
+            <div class="overflow-hidden whitespace-nowrap text-slate-800 font-medium">
+                <span class="inline-block animate-pulse text-kompas-darkred font-semibold">[05 OKT 2026]</span>
+                <span>Puncak Kemarau Panjang Kalimantan: 9.747 Kasus ISPA Tercatat, Tim Psikologi Lapangan Buka 14 Poin Konseling Rumah Aman Asap.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Primary Headline & Featured Content (8 Cols) -->
+            <section class="lg:col-span-8 space-y-8">
+                
+                <!-- PRIMARY FEATURED HEADLINE ARTICLE CARD -->
+                <div id="primaryHeadlineCard" class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80" 
+                             alt="Asap Karhutla Kalimantan" 
+                             class="w-full h-72 sm:h-96 object-cover"
+                             onerror="this.src='https://placehold.co/1200x600/990000/ffffff?text=Laporan+Khusus+Karhutla+Kalimantan'">
+                        <div class="absolute top-3 left-3 bg-kompas-red text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                            LAPORAN UTAMA EKARI
+                        </div>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 sm:p-6 text-white">
+                            <span class="text-xs font-medium text-amber-300"><i class="fa-regular fa-clock mr-1"></i> 05 Oktober 2026 | 08:30 WIB</span>
+                            <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold leading-tight mt-1 hover:text-red-200 cursor-pointer transition" onclick="openArticle('headline-1')">
+                                Kepungan Asap Karhutla Kalimantan: Dari Sesak Napas, Kemarau Panjang, hingga Ancaman Kesehatan Mental Keluarga
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div class="p-5 sm:p-6 space-y-4">
+                        <p class="text-gray-700 text-sm sm:text-base leading-relaxed">
+                            Bencana kabut asap melanda Kalimantan mulai dari Banjarbaru, Sintang, hingga Gunung Mas. Selain mencetuskan <strong class="text-kompas-red">9.747 kasus ISPA</strong>, krisis ekologi dari kemarau panjang ini memicu fenomena <em>Anticipatory Anxiety</em>, ketimpangan pendidikan anak, dan tekanan ekonomi hebat pada keluarga.
+                        </p>
+
+                        <!-- Highlights Quick Stats -->
+                        <div class="grid grid-cols-3 gap-2 py-3 bg-red-50/60 rounded-lg border border-red-100 text-center text-xs sm:text-sm">
+                            <div class="p-2">
+                                <span class="block text-kompas-red font-black text-lg sm:text-xl">9.747</span>
+                                <span class="text-gray-600 text-[11px]">Kasus ISPA</span>
+                            </div>
+                            <div class="p-2 border-x border-red-200">
+                                <span class="block text-amber-600 font-black text-lg sm:text-xl">320+</span>
+                                <span class="text-gray-600 text-[11px]">Indeks ISPU</span>
+                            </div>
+                            <div class="p-2">
+                                <span class="block text-slate-800 font-black text-lg sm:text-xl">3 Wilayah</span>
+                                <span class="text-gray-600 text-[11px]">Fokus Investigasi</span>
+                            </div>
+                        </div>
+
+                        <!-- Read Button & Metadata -->
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="flex items-center space-x-2 text-xs text-gray-500">
+                                <span class="font-semibold text-slate-800">Oleh: Tim Redaksi & Psikologi EKARI</span>
+                                <span>•</span>
+                                <span>8 Min Baca</span>
+                            </div>
+                            <button onclick="openArticle('headline-1')" class="bg-kompas-red hover:bg-kompas-darkred text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-sm">
+                                <span>Baca Selengkapnya</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HEALTH & EMERGENCY MONITORING DASHBOARD WIDGET -->
+                <div class="bg-slate-900 text-white rounded-xl p-5 shadow-md border border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700 pb-3 mb-4 gap-2">
+                        <div>
+                            <h3 class="font-bold text-lg text-white flex items-center">
+                                <i class="fa-solid fa-chart-line text-kompas-red mr-2"></i> Dasbor Pantauan Darurat Dampak Karhutla
+                            </h3>
+                            <p class="text-xs text-slate-400">Data resmi terverifikasi Posko Kesehatan & Tim Riset EKARI (Update: 05 Okt 2026)</p>
+                        </div>
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] px-2.5 py-1 rounded-full font-mono">
+                            <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i> Realtime Update
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Total Kasus ISPA</span>
+                            <span class="text-2xl font-extrabold text-red-400">9.747</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">+1.240 minggu ini</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Rumah Aman Asap</span>
+                            <span class="text-2xl font-extrabold text-emerald-400">142</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">Beroperasi aktif</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">Indeks Stres Keluarga</span>
+                            <span class="text-2xl font-extrabold text-amber-400">78.4%</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">Tingkat Kecemasan Tinggi</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                            <span class="text-xs text-slate-400 block">PJJ / Sekolah Daring</span>
+                            <span class="text-2xl font-extrabold text-blue-400">312</span>
+                            <span class="text-[10px] text-slate-400 block mt-1">Sekolah terdampak</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION HEADER FOR MORE ARTICLES -->
+                <div class="flex items-center justify-between border-b-2 border-kompas-red pb-2">
+                    <h2 class="text-xl font-extrabold text-slate-900 tracking-tight uppercase flex items-center">
+                        <span class="bg-kompas-red text-white w-2 h-6 mr-2 rounded-sm inline-block"></span>
+                        Artikel & Penelitian Terkait
+                    </h2>
+                    <span class="text-xs text-gray-500 font-medium">Menampilkan Berita Pilihan Redaksi</span>
+                </div>
+
+                <!-- SECONDARY ARTICLES GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="articlesGrid">
+                    <!-- Dynamic Items Javascript Generated -->
+                </div>
+
+            </section>
+
+            <!-- Right Sidebar Column (4 Cols) -->
+            <aside class="lg:col-span-4 space-y-6">
+                
+                <!-- POPULAR NEWS WIDGET -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                    <h3 class="font-extrabold text-slate-900 text-base border-b-2 border-kompas-red pb-2 mb-4 uppercase tracking-wider flex justify-between items-center">
+                        <span>Terpopular</span>
+                        <i class="fa-solid fa-fire-flame-curved text-kompas-red"></i>
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3 cursor-pointer group" onclick="openArticle('headline-1')">
+                            <span class="text-3xl font-black text-kompas-red/30 group-hover:text-kompas-red transition">01</span>
+                            <div>
+                                <span class="text-[10px] font-bold text-kompas-red uppercase">Psikologi Kebencanaan</span>
+                                <h4 class="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-kompas-red transition leading-snug">
+                                    Kepungan Asap Karhutla Kalimantan & Ancaman Kesehatan Mental Keluarga
+                                </h4>
+                                <span class="text-[11px] text-gray-400 mt-1 block">05 Okt 2026 • 12.4k Pembaca</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-3 flex items-start space-x-3 cursor-pointer group" onclick="openArticle('article-2')">
+                            <span class="text-3xl font-black text-gray-300 group-hover:text-kompas-red transition">02</span>
+                            <div>
+                                <span class="text-[10px] font-bold text-emerald-600 uppercase">Evaluasi Darurat</span>
+                                <h4 class="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-kompas-red transition leading-snug">
+                                    Rumah Aman Asap: Solusi Efektif atau Sekadar Pertolongan Pertama?
+                                </h4>
+                                <span class="text-[11px] text-gray-400 mt-1 block">04 Okt 2026 • 8.1k Pembaca</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-3 flex items-start space-x-3 cursor-pointer group" onclick="openArticle('article-3')">
+                            <span class="text-3xl font-black text-gray-300 group-hover:text-kompas-red transition">03</span>
+                            <div>
+                                <span class="text-[10px] font-bold text-blue-600 uppercase">Edukasi Anak</span>
+                                <h4 class="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-kompas-red transition leading-snug">
+                                    Trauma Isolasi dan Dampak Pembelajaran Jarak Jauh Darurat Asap
+                                </h4>
+                                <span class="text-[11px] text-gray-400 mt-1 block">03 Okt 2026 • 6.5k Pembaca</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPINION & EXPERT SPOTLIGHT CARD -->
+                <div class="bg-gradient-to-br from-red-900 to-slate-900 text-white rounded-xl p-5 shadow-sm">
+                    <span class="bg-kompas-red text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">KOLOM PAKAR EKARI</span>
+                    <h3 class="font-bold text-lg mt-2 mb-1">Membangun Ketahanan Mental Keluarga di Tengah Krisis Ekologi</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                        "Bencana asap bukan sekadar polusi fisik, melainkan stresor kumulatif kronis yang mengikis rasa aman anak-anak kita."
+                    </p>
+                    <div class="flex items-center space-x-3 pt-2 border-t border-slate-700">
+                        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-amber-300 border border-amber-400/40">
+                            Dr. P
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Dr. Pratiwi Rahayu, M.Psi.</h4>
+                            <p class="text-[10px] text-slate-400">Peneliti Psikologi Kebencanaan EKARI</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HELPLINE & RUMAH AMAN ASAAP CARD -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900">
+                    <div class="flex items-center space-x-2 font-bold text-amber-900 text-sm mb-2">
+                        <i class="fa-solid fa-hospital-user text-kompas-red text-base"></i>
+                        <span>Layanan Konseling & Posko Oksigen</span>
+                    </div>
+                    <p class="mb-3">Jika keluarga Anda mengalami sesak napas berat, panic attack, atau depresi isolasi kabut asap:</p>
+                    <a href="tel:119" class="block w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-center py-2 rounded-lg transition shadow-sm">
+                        <i class="fa-solid fa-phone mr-1"></i> Hubungi Posko Darurat EKARI (119 Ext 4)
+                    </a>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- FULL ARTICLE READER MODAL (KOMPAS STYLE READER MODE) -->
+    <div id="articleModal" class="fixed inset-0 bg-slate-900/80 z-50 hidden overflow-y-auto backdrop-blur-sm">
+        
+        <!-- Sticky Reading Progress Bar -->
+        <div class="fixed top-0 left-0 right-0 z-50 bg-gray-200 h-1">
+            <div id="readingProgress" class="reading-progress-bar"></div>
+        </div>
+
+        <div class="min-h-screen px-2 sm:px-4 py-6 flex justify-center items-start">
+            <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden my-6 border border-gray-200 relative animate-fade-in">
+                
+                <!-- Top Toolbar Sticky -->
+                <div class="sticky top-0 bg-white/95 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center justify-between z-30">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-kompas-red text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">EKARI Reader</span>
+                        <span id="modalCategoryTag" class="text-xs text-gray-500 font-semibold hidden sm:inline">Psikologi Bencana</span>
+                    </div>
+
+                    <!-- Reader Controls (Font Resize, Bookmark, Audio, Share) -->
+                    <div class="flex items-center space-x-2 sm:space-x-4 text-gray-600">
+                        <!-- Font Size Controls -->
+                        <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
+                            <button onclick="adjustFontSize(-1)" title="Kecilkan Teks" class="px-2 py-0.5 hover:bg-white rounded text-xs font-bold">A-</button>
+                            <span class="text-[10px] px-1 text-gray-400">Ukuran</span>
+                            <button onclick="adjustFontSize(1)" title="Besarkan Teks" class="px-2 py-0.5 hover:bg-white rounded text-sm font-bold">A+</button>
+                        </div>
+
+                        <!-- Audio Text-to-Speech Simulator -->
+                        <button onclick="toggleAudioReader()" id="audioBtn" class="p-2 hover:bg-red-50 hover:text-kompas-red rounded-full transition relative" title="Dengarkan Berita">
+                            <i class="fa-solid fa-volume-high text-base"></i>
+                        </button>
+
+                        <!-- Bookmark Button -->
+                        <button onclick="toggleBookmarkCurrent()" id="modalBookmarkBtn" class="p-2 hover:bg-red-50 hover:text-kompas-red rounded-full transition" title="Simpan Artikel">
+                            <i class="fa-regular fa-bookmark text-base"></i>
+                        </button>
+
+                        <!-- Share Button -->
+                        <button onclick="shareCurrentArticle()" class="p-2 hover:bg-red-50 hover:text-kompas-red rounded-full transition" title="Bagikan">
+                            <i class="fa-solid fa-share-nodes text-base"></i>
+                        </button>
+
+                        <!-- Close Button -->
+                        <button onclick="closeArticleModal()" class="p-2 bg-gray-100 hover:bg-kompas-red hover:text-white rounded-full transition ml-2">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SIMULATED AUDIO PLAYER BAR (Hidden by Default) -->
+                <div id="audioPlayerBar" class="hidden bg-slate-900 text-white p-3 px-6 flex items-center justify-between border-b border-slate-800 text-xs">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleAudioPlayPause()" id="playPauseAudioIcon" class="w-8 h-8 rounded-full bg-kompas-red text-white flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-pause"></i>
+                        </button>
+                        <div>
+                            <span class="font-bold block text-slate-200">Audio Reader EKARI (Suara AI Pakar)</span>
+                            <span id="audioTime" class="text-[10px] text-slate-400">01:15 / 07:45</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-300">Kecepatan: 1.0x</span>
+                        <button onclick="toggleAudioReader()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+
+                <!-- Article Content Header -->
+                <div class="p-6 sm:p-10 max-w-3xl mx-auto">
+                    
+                    <div class="space-y-3 mb-6 border-b border-gray-100 pb-6">
+                        <div class="flex items-center space-x-3">
+                            <span class="bg-red-100 text-kompas-red text-xs font-bold px-2.5 py-1 rounded">BERITA KHUSUS</span>
+                            <span class="text-xs text-gray-500 font-medium">Published: 05 Oktober 2026 | 08:30 WIB</span>
+                        </div>
+                        <h1 id="modalArticleTitle" class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 leading-tight font-serif">
+                            Kepungan Asap Karhutla Kalimantan: Dari Sesak Napas, Kemarau Panjang, hingga Ancaman Kesehatan Mental Keluarga
+                        </h1>
+                        <div class="flex items-center justify-between text-xs text-gray-500 pt-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-slate-800">Tim Redaksi & Riset Kebencanaan EKARI</span>
+                                <span>•</span>
+                                <span>Lokasi: Kalimantan (Banjarbaru, Sintang, Gunung Mas)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Article Hero Image -->
+                    <div class="mb-8 rounded-xl overflow-hidden shadow-md">
+                        <img id="modalArticleImage" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80" alt="Asap Kalimantan" class="w-full h-80 object-cover">
+                        <div class="bg-slate-50 p-2.5 text-xs text-gray-500 border-b border-gray-200 italic flex justify-between">
+                            <span>Foto: Suasana kabut asap tebal melingkupi pemukiman warga di Kalimantan akibat karhutla dan kemarau panjang.</span>
+                            <span class="font-semibold text-slate-600">Dok. EKARI News</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Article Body (Text and Structured Content) -->
+                    <div id="modalArticleBody" class="article-body font-serif text-slate-800 text-base sm:text-lg leading-relaxed space-y-6">
+                        
+                        <p class="text-lg font-medium text-slate-700 italic border-l-4 border-kompas-red pl-4 py-1 bg-red-50/50">
+                            <strong>EKARI NEWS, KALIMANTAN</strong> — Bencana kebakaran hutan dan lahan (karhutla) yang diperparah oleh gelombang kemarau panjang tahun 2026 terus mengepung berbagai kawasan di Pulau Kalimantan. Tidak hanya merusak kualitas udara dan mencatatkan sedikitnya <strong class="text-kompas-red">9.747 kasus Infeksi Saluran Pernapasan Akut (ISPA)</strong> dalam kurun waktu satu bulan terakhir, krisis ekologi ini telah bereskalasi menjadi ancaman serius terhadap psikologis dan kesehatan mental keluarga.
+                        </p>
+
+                        <h2 class="text-xl font-bold font-sans text-slate-900 pt-4 border-b pb-2">1. Jeritan dari Tapak: Sesak Fisik dan Batin Warga</h2>
+                        <p>
+                            Penelusuran tim EKARI di tiga titik kritis — Banjarbaru (Kalimantan Selatan), Sintang (Kalimantan Barat), dan Gunung Mas (Kalimantan Tengah) — menemukan pola keputusasaan masyarakat yang kian meluas. Kabut asap kuning kecokelatan yang pekat tidak lagi sekadar menghalangi pandangan mata, tetapi melumpuhkan aktivitas paling mendasar.
+                        </p>
+
+                        <!-- QUOTE CALLOUT 1: YNC (Banjarbaru) -->
+                        <div class="quote-box p-4 rounded-r-lg my-6 space-y-2">
+                            <p class="text-slate-800 italic font-serif text-base sm:text-lg font-medium">
+                                "Anak-anak mulai batuk malam hari, dan kami harus memilih antara membeli beras atau masker N95 yang harganya melonjak tajam. Di rumah ruangan terasa panas karena jendela tidak boleh dibuka sama sekali, tapi asap tetap menyusup lewat sela-sela atap."
+                            </p>
+                            <div class="text-xs font-bold text-kompas-red uppercase font-sans">
+                                — YNC (34 tahun), Ibu Rumah Tangga di Banjarbaru, Kalimantan Selatan
+                            </div>
+                        </div>
+
+                        <!-- QUOTE CALLOUT 2: JM (Sintang) -->
+                        <div class="quote-box p-4 rounded-r-lg my-6 space-y-2">
+                            <p class="text-slate-800 italic font-serif text-base sm:text-lg font-medium">
+                                "Asap tidak hanya menutupi matahari, tapi merenggut kepastian hidup kami. Lapangan kerja terhenti, anak tidak bisa sekolah, dan tiap hirupan napas terasa menyiksa dada."
+                            </p>
+                            <div class="text-xs font-bold text-kompas-red uppercase font-sans">
+                                — JM (42 tahun), Petani & Kepala Keluarga di Sintang, Kalimantan Barat
+                            </div>
+                        </div>
+
+                        <!-- QUOTE CALLOUT 3: R (Gunung Mas) -->
+                        <div class="quote-box p-4 rounded-r-lg my-6 space-y-2">
+                            <p class="text-slate-800 italic font-serif text-base sm:text-lg font-medium">
+                                "Tiap hari cemas kalau-kalau api merembet ke pemukiman. Suara sirene damkar membuat kami gelisah berlebihan. Kami tidur tanpa nyenyak, selalu bersiap evakuasi."
+                            </p>
+                            <div class="text-xs font-bold text-kompas-red uppercase font-sans">
+                                — R (29 tahun), Warga Pemukiman dekat Lahan Gambut, Gunung Mas, Kalimantan Tengah
+                            </div>
+                        </div>
+
+                        <h2 class="text-xl font-bold font-sans text-slate-900 pt-6 border-b pb-2">2. Analisis Psikologi Kebencanaan: Tiga Ancaman Mental Utama</h2>
+                        <p>
+                            Divisi Penelitian Psikologi Bencana EKARI menyoroti bahwa dampak paparan asap karhutla berkepanjangan jauh melampaui masalah medis paru-paru. Terjadi manifestasi trauma psikososial yang menekan ketahanan keluarga melalui tiga aspek utama:
+                        </p>
+
+                        <!-- Interactive Accordion / Cards for Psychological Breakdown -->
+                        <div class="space-y-4 my-6 font-sans">
+                            <!-- Card 1: Anticipatory Anxiety -->
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 rounded-full bg-red-100 text-kompas-red flex items-center justify-center font-bold text-sm">A</div>
+                                    <h3 class="font-bold text-lg text-slate-900">Kecemasan Antisipatif (Anticipatory Anxiety)</h3>
+                                </div>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Masyarakat berada dalam kondisi <em>hypervigilance</em> (kewaspadaan berlebihan) terus-menerus. Ketakutan akan titik api baru dan perburukan asap yang tak terprediksi memicu gangguan tidur kronis (insomnia), palpitasi jantung, serta kepanikan kolektif setiap kali mencium bau terbakar.
+                                </p>
+                            </div>
+
+                            <!-- Card 2: Learning Disruption -->
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">B</div>
+                                    <h3 class="font-bold text-lg text-slate-900">Gangguan Belajar & Isolasi Anak (Learning Disruption)</h3>
+                                </div>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Penutupan sekolah fisik dan transisi mendadak ke Pembelajaran Jarak Jauh (PJJ) darurat memperparah trauma isolasi anak. Terbatasnya konektivitas internet di wilayah Kalimantan pedalaman memicu penurunan performa kognitif, kebosanan ekstrem, serta temper tantrum pada anak usia dini akibat kurungan ruangan.
+                                </p>
+                            </div>
+
+                            <!-- Card 3: Economic Distress -->
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">C</div>
+                                    <h3 class="font-bold text-lg text-slate-900">Tekanan Ekonomi & Konflik Rumah Tangga (Economic Distress)</h3>
+                                </div>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Terhentinya aktivitas perkebunan, pasar luar ruangan, dan transportasi lokal memangkas pendapatan harian keluarga. Beban finansial ekstra untuk membeli obat ISPA, pemurni udara, atau air bersih menciptakan gesekan emosional tinggi antar anggota keluarga.
+                                </p>
+                            </div>
+                        </div>
+
+                        <h2 class="text-xl font-bold font-sans text-slate-900 pt-6 border-b pb-2">3. Evaluasi Darurat & Efektivitas "Rumah Aman Asap"</h2>
+                        <p>
+                            Menanggapi lonjakan **9.747 kasus ISPA**, pemerintah daerah bersama relawan medis mendirikan jaringan <strong>"Rumah Aman Asap" (Smoke Safe Houses)</strong>. Evaluasi lapangan EKARI menggarisbawahi beberapa catatan penting terkait keberlanjutan fasilitas ini:
+                        </p>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 my-4 font-sans text-xs sm:text-sm space-y-3 text-emerald-900">
+                            <h4 class="font-bold text-emerald-950 text-base flex items-center">
+                                <i class="fa-solid fa-square-check text-emerald-600 mr-2"></i> Hasil Evaluasi Program Rumah Aman Asap
+                            </h4>
+                            <ul class="list-disc pl-5 space-y-1.5">
+                                <li><strong>Penyaringan Udara HEPA:</strong> Ruangan ber-AC dengan filter penyaring debu halus PM2.5 terbukti mampu menurunkan konsentrasi partikulat hingga 70% di dalam area evakuasi darurat.</li>
+                                <li><strong>Layanan Oksigen & Nebulizer:</strong> Posko berhasil menangani lebih dari 1.800 balita dan lansia yang mengalami sesak napas akut tanpa harus dirujuk ke RS yang kelebihan kapasitas.</li>
+                                <li><strong>Pojok Dampingan Psikososial:</strong> Penyediaan konselor awal untuk anak-anak berhasil mengurangi gejala kecemasan melalui metode mewarnai dan terapi bermain tertutup.</li>
+                                <li><strong>Tantangan Distribusi:</strong> Kapasitas Rumah Aman Asap masih terkonsentrasi di pusat kota, sementara desa-desa terisolasi di Sintang dan Gunung Mas masih minim akses air purifier.</li>
+                            </ul>
+                        </div>
+
+                        <p>
+                            Guna mencegah dampak jangka panjang yang ireversibel, tim riset EKARI mendesak pemangku kebijakan untuk memprioritaskan tidak hanya pemadaman fisik lahan gambut, melainkan juga pendistribusian filter udara bersubsidi serta penguatan sistem intervensi kesehatan mental berbasis komunitas secara berkelanjutan.
+                        </p>
+
+                    </div>
+
+                    <!-- Article Footer Tags & Author Box -->
+                    <div class="mt-10 pt-6 border-t border-gray-200 font-sans space-y-6">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Topik Terkait:</span>
+                            <span class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full cursor-pointer">#KarhutlaKalimantan</span>
+                            <span class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full cursor-pointer">#ISPA2026</span>
+                            <span class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full cursor-pointer">#PsikologiKebencanaan</span>
+                            <span class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full cursor-pointer">#RumahAmanAsap</span>
+                        </div>
+
+                        <!-- Share Bar in Modal -->
+                        <div class="bg-gray-50 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3">
+                            <span class="text-xs font-bold text-gray-700">Bagikan artikel riset ini:</span>
+                            <div class="flex space-x-2">
+                                <button onclick="shareVia('whatsapp')" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-semibold flex items-center space-x-1 hover:bg-emerald-700">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <span>WhatsApp</span>
+                                </button>
+                                <button onclick="shareVia('copy')" class="bg-slate-700 text-white text-xs px-3 py-2 rounded-lg font-semibold flex items-center space-x-1 hover:bg-slate-800">
+                                    <i class="fa-solid fa-link"></i>
+                                    <span>Salin Tautan</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- COMMENTS SECTION -->
+                        <div class="pt-6 border-t border-gray-200 space-y-6">
+                            <h3 class="font-extrabold text-xl text-slate-900 flex items-center justify-between">
+                                <span>Komentar & Diskusi Publik (<span id="commentCount">3</span>)</span>
+                            </h3>
+
+                            <!-- New Comment Input Box -->
+                            <form onsubmit="submitComment(event)" class="space-y-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="commentName" required placeholder="Nama Anda / Inisial..." class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-kompas-red focus:outline-none">
+                                    <input type="text" id="commentRole" placeholder="Kota / Profesi (misal: Banjarbaru / Ibu..." class="bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-kompas-red focus:outline-none">
+                                </div>
+                                <textarea id="commentText" required rows="3" placeholder="Tuliskan tanggapan atau pengalaman Anda terkait kondisi kabut asap..." class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-kompas-red focus:outline-none"></textarea>
+                                <button type="submit" class="bg-kompas-red hover:bg-kompas-darkred text-white text-xs font-bold px-5 py-2.5 rounded-lg transition shadow-sm">
+                                    Kirim Komentar
+                                </button>
+                            </form>
+
+                            <!-- Comment List Container -->
+                            <div id="commentsList" class="space-y-4 pt-4">
+                                <!-- Pre-populated Comments -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-1">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <span class="font-bold text-slate-800">Ahmad N. (Kalsel)</span>
+                                        <span class="text-gray-400">05 Okt 2026 • 09:15 WIB</span>
+                                    </div>
+                                    <p class="text-xs text-gray-700">Terima kasih EKARI sudah mengangkat sudut pandang psikologi ini. Memang anak-anak di rumah makin stres karena tidak bisa keluar sama sekali.</p>
+                                </div>
+
+                                <div class="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-1">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <span class="font-bold text-slate-800">Siti Rahma (Relawan Medis)</span>
+                                        <span class="text-gray-400">05 Okt 2026 • 10:02 WIB</span>
+                                    </div>
+                                    <p class="text-xs text-gray-700">Angka 9.747 ISPA itu baru yang terdata di puskesmas resmi. Banyak warga desa yang bertahan di rumah dengan obat seadanya. Mohon bantuan masker filter N95 diperbanyak.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKMARKED ARTICLES DRAWER / MODAL -->
+    <div id="savedModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl p-6 overflow-y-auto flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center border-b pb-4 mb-4">
+                    <h3 class="font-bold text-lg text-slate-900 flex items-center">
+                        <i class="fa-solid fa-bookmark text-kompas-red mr-2"></i> Artikel Tersimpan
+                    </h3>
+                    <button onclick="closeSavedArticlesModal()" class="text-gray-500 hover:text-slate-900">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <div id="savedArticlesList" class="space-y-4">
+                    <p class="text-xs text-gray-500 italic text-center py-8">Belum ada artikel yang disimpan.</p>
+                </div>
+            </div>
+
+            <button onclick="closeSavedArticlesModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 rounded-lg text-xs mt-6">
+                Tutup Saja
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-xs flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm" id="toastIcon"></i>
+        <span id="toastMsg">Tautan berhasil disalin!</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-kompas-navy text-white mt-12 border-t-4 border-kompas-red">
+        <div class="container mx-auto px-4 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-xs">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-kompas-red text-white p-1.5 rounded font-black text-lg">EKARI</span>
+                        <span class="font-bold text-base tracking-wider uppercase">NEWS PORTAL</span>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed">
+                        Portal Berita Penelitian, Kesehatan Masyarakat, dan Analisis Psikologi Kebencanaan Indonesia. Berkomitmen menyajikan laporan berbasis data dan humanis.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3 uppercase tracking-wider">Kategori Liputan</h4>
+                    <ul class="space-y-2 text-slate-300">
+                        <li><a href="#" onclick="filterCategory('psikologi-bencana')" class="hover:text-white">Psikologi Bencana</a></li>
+                        <li><a href="#" onclick="filterCategory('kesehatan-masyarakat')" class="hover:text-white">Kesehatan Masyarakat & ISPA</a></li>
+                        <li><a href="#" onclick="filterCategory('penelitian-lingkungan')" class="hover:text-white">Riset Karhutla & Gambut</a></li>
+                        <li><a href="#" onclick="filterCategory('edukasi-anak')" class="hover:text-white">Edukasi & Dampak Anak</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3 uppercase tracking-wider">Mitra Kebencanaan</h4>
+                    <ul class="space-y-2 text-slate-300">
+                        <li>Posko Utama Rumah Aman Asap</li>
+                        <li>Tim Riset Psikologi Bencana EKARI</li>
+                        <li>Layanan Konseling Darurat 119</li>
+                        <li>Jaringan Informasi Udara Publik</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm text-amber-400 mb-3 uppercase tracking-wider">Berlangganan Buletin Riset</h4>
+                    <p class="text-slate-400 mb-3">Dapatkan ringkasan penelitian harian langsung di email Anda.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Email Anda..." class="bg-slate-800 text-white p-2 rounded-l-lg text-xs w-full focus:outline-none">
+                        <button onclick="showToast('Terima kasih telah berlangganan buletin EKARI!')" class="bg-kompas-red hover:bg-kompas-darkred px-3 rounded-r-lg font-bold">Kirim</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-400">
+                <p>© 2026 EKARI News - Portal Berita Penelitian & Psikologi. All rights reserved.</p>
+                <div class="flex space-x-4 mt-3 sm:mt-0">
+                    <a href="#" class="hover:text-white">Pedoman Media Cyber</a>
+                    <a href="#" class="hover:text-white">Kebijakan Privasi</a>
+                    <a href="#" class="hover:text-white">Kontak Redaksi</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ARTICLES DATABASE
+        const articlesData = [
+            {
+                id: 'headline-1',
+                title: 'Kepungan Asap Karhutla Kalimantan: Dari Sesak Napas, Kemarau Panjang, hingga Ancaman Kesehatan Mental Keluarga',
+                category: 'psikologi-bencana',
+                categoryLabel: 'Psikologi Bencana',
+                date: '05 Oktober 2026',
+                author: 'Tim Redaksi & Divisi Psikologi Kebencanaan EKARI',
+                image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',
+                excerpt: 'Bencana kabut asap melanda berbagai kawasan Kalimantan. Selain mencetuskan 9.747 kasus ISPA, krisis ekologi dari kemarau panjang ini memicu fenomena Anticipatory Anxiety, ketimpangan pendidikan anak, dan tekanan ekonomi hebat.',
+                readTime: '8 Min'
+            },
+            {
+                id: 'article-2',
+                title: 'Evaluasi Darurat "Rumah Aman Asap": Seberapa Efektif Menangkal ISPA dan Trauma Anak?',
+                category: 'evaluasi-darurat',
+                categoryLabel: 'Evaluasi Darurat',
+                date: '04 Oktober 2026',
+                author: 'Dr. Hendra Wijaya (Pakar Edukasi Lingkungan)',
+                image: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&w=800&q=80',
+                excerpt: 'Penyediaan posko ber-AC dengan filter HEPA serta bantuan pasokan oksigen di Banjarbaru dan Sintang dievaluasi. Akankah menjadi solusi jangka panjang?',
+                readTime: '5 Min'
+            },
+            {
+                id: 'article-3',
+                title: 'Anak-Anak Terjebak Pembelajaran Jarak Jauh: Membedah Isu Isolasi Sosial dan Regresi Belajar',
+                category: 'edukasi-anak',
+                categoryLabel: 'Edukasi & Anak',
+                date: '03 Oktober 2026',
+                author: 'Siti Rahmawati, M.Psi.',
+                image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+                excerpt: 'Penutupan sekolah fisik selama lebih dari tiga minggu darurat asap memicu tingkat kebosanan tinggi dan penurunan pemahaman konsep matematika dasar anak.',
+                readTime: '6 Min'
+            },
+            {
+                id: 'article-4',
+                title: 'Krisis Udara Kalimantan: Studi Analisis Kualitas Udara PM2.5 Terhadap Risiko Depresi Kronis',
+                category: 'penelitian-lingkungan',
+                categoryLabel: 'Penelitian Lingkungan',
+                date: '02 Oktober 2026',
+                author: 'Tim Laboratorium Ekologi EKARI',
+                image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80',
+                excerpt: 'Paparan partikel mikro PM2.5 tidak hanya merusak sistem pernapasan tetapi juga dapat menembus sawar darah otak dan memicu peradangan saraf.',
+                readTime: '7 Min'
+            }
+        ];
+
+        let currentArticleId = 'headline-1';
+        let savedArticleIds = [];
+        let currentFontSizeLevel = 0; // -1: Small, 0: Normal, 1: Large
+        let isAudioPlaying = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSecondaryArticles(articlesData);
+            updateBookmarkCount();
+
+            // Scroll progress listener for article modal
+            const articleModal = document.getElementById('articleModal');
+            articleModal.addEventListener('scroll', () => {
+                const scrollTop = articleModal.scrollTop;
+                const scrollHeight = articleModal.scrollHeight - articleModal.clientHeight;
+                const progress = (scrollTop / scrollHeight) * 100;
+                document.getElementById('readingProgress').style.width = Math.min(progress, 100) + '%';
+            });
+        });
+
+        function renderSecondaryArticles(list) {
+            const grid = document.getElementById('articlesGrid');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 py-8 text-center text-gray-500 text-sm">Tidak ada artikel yang sesuai dengan kriteria pencarian/kategori.</div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                if (item.id === 'headline-1' && list.length > 1) return; // Skip primary headline in secondary grid if showing all
+
+                const isSaved = savedArticleIds.includes(item.id);
+
+                const cardHTML = `
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-44 overflow-hidden">
+                                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="openArticle('${item.id}')" onerror="this.src='https://placehold.co/800x500/slate/ffffff?text=Berita+EKARI'">
+                                <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase backdrop-blur-sm">
+                                    ${item.categoryLabel}
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-2">
+                                <div class="text-[11px] text-gray-400 flex items-center space-x-2">
+                                    <span>${item.date}</span>
+                                    <span>•</span>
+                                    <span>${item.readTime}</span>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug hover:text-kompas-red cursor-pointer transition line-clamp-2" onclick="openArticle('${item.id}')">
+                                    ${item.title}
+                                </h3>
+                                <p class="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+                                    ${item.excerpt}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="px-4 pb-4 pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                            <span class="text-gray-500 truncate max-w-[180px]">${item.author}</span>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleBookmark('${item.id}')" class="p-1.5 hover:text-kompas-red text-gray-400">
+                                    <i class="${isSaved ? 'fa-solid text-kompas-red' : 'fa-regular'} fa-bookmark"></i>
+                                </button>
+                                <button onclick="openArticle('${item.id}')" class="font-bold text-kompas-red hover:underline flex items-center space-x-1">
+                                    <span>Baca</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        function openArticle(id) {
+            currentArticleId = id;
+            const article = articlesData.find(a => a.id === id) || articlesData[0];
+
+            document.getElementById('modalArticleTitle').innerText = article.title;
+            document.getElementById('modalCategoryTag').innerText = article.categoryLabel;
+            document.getElementById('modalArticleImage').src = article.image;
+
+            // Update bookmark button state in modal
+            const isSaved = savedArticleIds.includes(id);
+            const modalBkBtn = document.getElementById('modalBookmarkBtn');
+            modalBkBtn.innerHTML = `<i class="${isSaved ? 'fa-solid text-kompas-red' : 'fa-regular'} fa-bookmark text-base"></i>`;
+
+            // Open modal
+            const modal = document.getElementById('articleModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            modal.scrollTop = 0;
+            document.getElementById('readingProgress').style.width = '0%';
+        }
+
+        function closeArticleModal() {
+            document.getElementById('articleModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            if (isAudioPlaying) {
+                toggleAudioReader(); // Stop audio if playing
+            }
+        }
+
+        function adjustFontSize(direction) {
+            const body = document.getElementById('modalArticleBody');
+            if (direction === 1 && currentFontSizeLevel < 2) {
+                currentFontSizeLevel++;
+            } else if (direction === -1 && currentFontSizeLevel > -1) {
+                currentFontSizeLevel--;
+            }
+
+            if (currentFontSizeLevel === 1) {
+                body.className = "article-body font-serif text-slate-800 text-xl leading-relaxed space-y-6";
+            } else if (currentFontSizeLevel === 2) {
+                body.className = "article-body font-serif text-slate-800 text-2xl leading-relaxed space-y-6";
+            } else if (currentFontSizeLevel === -1) {
+                body.className = "article-body font-serif text-slate-800 text-sm leading-relaxed space-y-6";
+            } else {
+                body.className = "article-body font-serif text-slate-800 text-base sm:text-lg leading-relaxed space-y-6";
+            }
+
+            showToast(`Ukuran teks diubah (${currentFontSizeLevel > 0 ? '+' + currentFontSizeLevel : currentFontSizeLevel})`);
+        }
+
+        function toggleBookmark(id) {
+            const index = savedArticleIds.indexOf(id);
+            if (index > -1) {
+                savedArticleIds.splice(index, 1);
+                showToast("Artikel dihapus dari simpanan.");
+            } else {
+                savedArticleIds.push(id);
+                showToast("Artikel berhasil disimpan!");
+            }
+            updateBookmarkCount();
+            renderSecondaryArticles(articlesData);
+        }
+
+        function toggleBookmarkCurrent() {
+            toggleBookmark(currentArticleId);
+            const isSaved = savedArticleIds.includes(currentArticleId);
+            document.getElementById('modalBookmarkBtn').innerHTML = `<i class="${isSaved ? 'fa-solid text-kompas-red' : 'fa-regular'} fa-bookmark text-base"></i>`;
+        }
+
+        function updateBookmarkCount() {
+            document.getElementById('bookmark-count').innerText = savedArticleIds.length;
+        }
+
+        function openSavedArticlesModal() {
+            const container = document.getElementById('savedArticlesList');
+            container.innerHTML = '';
+
+            if (savedArticleIds.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-8">Belum ada artikel yang disimpan.</p>`;
+            } else {
+                savedArticleIds.forEach(id => {
+                    const art = articlesData.find(a => a.id === id);
+                    if (art) {
+                        container.innerHTML += `
+                            <div class="p-3 bg-slate-50 rounded-lg border border-gray-200 flex justify-between items-start space-x-2">
+                                <div>
+                                    <span class="text-[10px] font-bold text-kompas-red uppercase">${art.categoryLabel}</span>
+                                    <h4 onclick="closeSavedArticlesModal(); openArticle('${art.id}');" class="text-xs font-bold text-slate-800 cursor-pointer hover:underline line-clamp-2">${art.title}</h4>
+                                </div>
+                                <button onclick="toggleBookmark('${art.id}'); openSavedArticlesModal();" class="text-gray-400 hover:text-red-600 p-1">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+            }
+
+            document.getElementById('savedModal').classList.remove('hidden');
+        }
+
+        function closeSavedArticlesModal() {
+            document.getElementById('savedModal').classList.add('hidden');
+        }
+
+        function submitComment(e) {
+            e.preventDefault();
+            const name = document.getElementById('commentName').value.trim();
+            const role = document.getElementById('commentRole').value.trim();
+            const text = document.getElementById('commentText').value.trim();
+
+            if (!name || !text) return;
+
+            const commentsList = document.getElementById('commentsList');
+            const commentCountSpan = document.getElementById('commentCount');
+            const currentCount = parseInt(commentCountSpan.innerText) || 0;
+
+            const newCommentHTML = `
+                <div class="bg-red-50/60 p-4 rounded-xl border border-red-100 space-y-1 animate-fade-in">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-900">${name} ${role ? '(' + role + ')' : ''}</span>
+                        <span class="text-kompas-red font-semibold">Baru saja</span>
+                    </div>
+                    <p class="text-xs text-gray-800">${text}</p>
+                </div>
+            `;
+
+            commentsList.insertAdjacentHTML('afterbegin', newCommentHTML);
+            commentCountSpan.innerText = currentCount + 1;
+
+            // Reset Form
+            document.getElementById('commentName').value = '';
+            document.getElementById('commentRole').value = '';
+            document.getElementById('commentText').value = '';
+
+            showToast("Komentar Anda telah terpublikasi!");
+        }
+
+        function toggleAudioReader() {
+            const playerBar = document.getElementById('audioPlayerBar');
+            isAudioPlaying = !isAudioPlaying;
+
+            if (isAudioPlaying) {
+                playerBar.classList.remove('hidden');
+                showToast("Audio Reader Aktif: Memutar rangkuman berita EKARI");
+            } else {
+                playerBar.classList.add('hidden');
+            }
+        }
+
+        function toggleAudioPlayPause() {
+            const icon = document.getElementById('playPauseAudioIcon');
+            if (icon.innerHTML.includes('pause')) {
+                icon.innerHTML = `<i class="fa-solid fa-play"></i>`;
+                showToast("Audio Dijeda");
+            } else {
+                icon.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+                showToast("Melanjutkan Audio");
+            }
+        }
+
+        function shareCurrentArticle() {
+            shareVia('copy');
+        }
+
+        function shareVia(type) {
+            if (type === 'whatsapp') {
+                const text = encodeURIComponent(`Baca berita terbaru EKARI News: Kepungan Asap Karhutla Kalimantan - Dari Sesak Napas hingga Ancaman Mental Keluarga.`);
+                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            } else {
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = window.location.href;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                showToast("Tautan berita telah disalin ke clipboard!");
+            }
+        }
+
+        function filterCategory(cat) {
+            // Highlight active button
+            const btns = document.querySelectorAll('.cat-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('text-kompas-red', 'border-b-2', 'border-kompas-red');
+                btn.classList.add('text-gray-600');
+            });
+
+            if (cat === 'semua') {
+                renderSecondaryArticles(articlesData);
+                return;
+            }
+
+            const filtered = articlesData.filter(a => a.category === cat);
+            renderSecondaryArticles(filtered);
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = articlesData.filter(a => 
+                a.title.toLowerCase().includes(query) || 
+                a.excerpt.toLowerCase().includes(query)
+            );
+            renderSecondaryArticles(filtered);
+        }
+
+        function handleSearchMobile() {
+            const query = document.getElementById('searchInputMobile').value.toLowerCase().trim();
+            const filtered = articlesData.filter(a => 
+                a.title.toLowerCase().includes(query) || 
+                a.excerpt.toLowerCase().includes(query)
+            );
+            renderSecondaryArticles(filtered);
+        }
+
+        function toggleMobileSearch() {
+            const box = document.getElementById('mobileSearchBox');
+            box.classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
